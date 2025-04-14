@@ -86,6 +86,23 @@ class Vector2 {
     }
 
     /**
+     * 获取x分量
+     * @constructor
+     */
+    get X() {
+        return this.x;
+    }
+
+
+    /**
+     * 获取y分量
+     * @constructor
+     */
+    get Y() {
+        return this.y;
+    }
+
+    /**
      * 获取向量的高度（即 y 分量）。
      */
     get height() {

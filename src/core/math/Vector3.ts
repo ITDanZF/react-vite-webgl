@@ -102,6 +102,18 @@ class Vector3 {
         return this;
     }
 
+    get X() {
+        return this.x;
+    }
+
+    get Y() {
+        return this.y;
+    }
+
+    get Z() {
+        return this.z;
+    }
+
     /**
      * 根据索引获取对应的坐标分量
      * @param index - 坐标分量索引（0: x, 1: y, 2: z）

@@ -7,18 +7,6 @@ import {Vector} from "@/core/math/Vector.ts";
 // 定义一个联合类型
 export type Matrix = Matrix2 | Matrix3 | Matrix4;
 
-// 辅助类型守卫函数
-export function isMatrix2(m: Matrix): m is Matrix2 {
-    return (m as Matrix2).isMatrix2 === true;
-}
-
-export function isMatrix3(m: Matrix): m is Matrix3 {
-    return (m as Matrix3).isMatrix3 === true;
-}
-
-export function isMatrix4(m: Matrix): m is Matrix4 {
-    return (m as Matrix4).isMatrix4 === true;
-}
 
 /**
  * 转换成64位的数组
@@ -26,55 +14,55 @@ export function isMatrix4(m: Matrix): m is Matrix4 {
  * @returns 包含所有数据的 Float64Array
  */
 export function toFloat64Array(array: Array<Vector> | number[][]): Float64Array {
-    if (array.length === 0) {
-        return new Float64Array(0);
+
+}
+
+
+/**
+ * 创建矩阵的工厂函数
+ * @param dimension 矩阵维度(2,3,4)，表示nxn矩阵
+ * @param values 矩阵元素值，按行主序排列。如果提供的值少于维度^2，将用单位矩阵的对应位置填充
+ * @returns 对应维度的矩阵实例
+ * @throws 如果维度不是2,3,4将抛出错误
+ */
+export function Matrix(dimension: 2 | 3 | 4, ...values: number[]): Matrix {
+    // 计算矩阵所需的元素总数
+    const totalElements = dimension * dimension;
+
+    // 确保values长度等于totalElements，不足则用单位矩阵对应位置的值填充
+    const paddedValues = [...values];
+    while (paddedValues.length < totalElements) {
+        // 计算当前位置对应的行列索引
+        const currentIndex = paddedValues.length;
+        const row = Math.floor(currentIndex / dimension);
+        const col = currentIndex % dimension;
+
+        // 如果是对角线位置，填充1，否则填充0（单位矩阵）
+        paddedValues.push(row === col ? 1 : 0);
     }
 
-    if (typeof array[0] === 'object' && 'x' in array[0]) {
-        // 处理向量数组
-        const vectors = array as Array<Vector>;
-
-        // 先确定所有向量类型，计算总长度
-        let totalSize = 0;
-        for (const vec of vectors) {
-            // 使用向量的toFloat64Array方法获取数组，然后获取其长度
-            totalSize += vec.toFloat64Array().length;
-        }
-
-        // 创建最终结果数组
-        const result = new Float64Array(totalSize);
-
-        // 填充数据
-        let offset = 0;
-        for (const vec of vectors) {
-            const vecArray = vec.toFloat64Array();
-            // 使用TypedArray.set方法进行高效复制
-            result.set(vecArray, offset);
-            offset += vecArray.length;
-        }
-
-        return result;
-    } else {
-        // 处理二维数字数组
-        const numArrays = array as number[][];
-
-        // 计算总长度
-        let totalSize = 0;
-        for (const row of numArrays) {
-            totalSize += row.length;
-        }
-
-        // 创建结果数组
-        const result = new Float64Array(totalSize);
-
-        // 填充数据
-        let offset = 0;
-        for (const row of numArrays) {
-            result.set(row, offset);
-            offset += row.length;
-        }
-
-        return result;
+    // 根据不同维度创建对应的矩阵
+    switch (dimension) {
+        case 2:
+            return new Matrix2(
+                paddedValues[0], paddedValues[1],
+                paddedValues[2], paddedValues[3]
+            );
+        case 3:
+            return new Matrix3(
+                paddedValues[0], paddedValues[1], paddedValues[2],
+                paddedValues[3], paddedValues[4], paddedValues[5],
+                paddedValues[6], paddedValues[7], paddedValues[8]
+            );
+        case 4:
+            return new Matrix4(
+                paddedValues[0], paddedValues[1], paddedValues[2], paddedValues[3],
+                paddedValues[4], paddedValues[5], paddedValues[6], paddedValues[7],
+                paddedValues[8], paddedValues[9], paddedValues[10], paddedValues[11],
+                paddedValues[12], paddedValues[13], paddedValues[14], paddedValues[15]
+            );
+        default:
+            throw new Error(`不支持的矩阵维度: ${dimension}，只支持2,3,4维矩阵`);
     }
 }
 

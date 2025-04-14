@@ -79,6 +79,22 @@ class Vector4 {
         return this;
     }
 
+    get X() {
+        return this.x;
+    }
+
+    get Y() {
+        return this.y;
+    }
+
+    get Z() {
+        return this.z;
+    }
+
+
+    get W() {
+        return this.w;
+    }
 
 
     setComponent(index: number, value: number): Vector4 {
